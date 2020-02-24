@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using HtmlAgilityPack;
+using Microsoft.Win32;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -87,13 +88,8 @@ namespace ExcelPatentDate
                     {
                         string a = wsRow.Hyperlink.AbsoluteUri.Substring(i + 1);
                         tbl.Columns[tbl.Columns.Count - 1].DefaultValue = "https://patents.google.com/" + a.Replace("_", "");
-                        HttpClient hc = new HttpClient();
-                        //HttpClient hc = new HttpClient();
-                        var response = await hc.GetByteArrayAsync(b);
-                        string source = Encoding.GetEncoding("utf-8").GetString(response, 0, response.Length - 1);
-                        source = WebUtility.HtmlDecode(source);
-                        XmlDocument test = new XmlDocument();
-                        test.LoadXml(source);
+                       string b = "https://patents.google.com/" + a.Replace("_", "");
+                        getDate(b);
                     }
                     DataRow row = tbl.Rows.Add();
                     foreach (var cell in wsRow)
@@ -106,6 +102,25 @@ namespace ExcelPatentDate
             }
         }
 
+        public void getDate(string b)
+        {
+            HttpClient hc = new HttpClient();
+            var response = hc.GetByteArrayAsync(b).Result;
+            string source = Encoding.GetEncoding("utf-8").GetString(response, 0, response.Length - 1);
+            //var lines = source.Split('\n');
+            //foreach (var line in lines)
+            //{
+            //    if (line.Contains("itemprop=\"date\""))
+            //    {
+
+            //    }
+            //}
+            source = WebUtility.HtmlDecode(source);
+
+            HtmlDocument test = new HtmlDocument();
+            test.LoadHtml(source);
+
+        }
 
     }
 }
