@@ -88,7 +88,7 @@ namespace ExcelPatentDate
                     {
                         string a = wsRow.Hyperlink.AbsoluteUri.Substring(i + 1);
                         tbl.Columns[tbl.Columns.Count - 1].DefaultValue = "https://patents.google.com/" + a.Replace("_", "");
-                       string b = "https://patents.google.com/" + a.Replace("_", "");
+                        string b = "https://patents.google.com/" + a.Replace("_", "");
                         getDate(b);
                     }
                     DataRow row = tbl.Rows.Add();
@@ -107,18 +107,28 @@ namespace ExcelPatentDate
             HttpClient hc = new HttpClient();
             var response = hc.GetByteArrayAsync(b).Result;
             string source = Encoding.GetEncoding("utf-8").GetString(response, 0, response.Length - 1);
-            //var lines = source.Split('\n');
-            //foreach (var line in lines)
-            //{
-            //    if (line.Contains("itemprop=\"date\""))
-            //    {
-
-            //    }
-            //}
             source = WebUtility.HtmlDecode(source);
 
-            HtmlDocument test = new HtmlDocument();
-            test.LoadHtml(source);
+            //HtmlDocument test = new HtmlAgilityPack.HtmlDocument();
+            //test.LoadHtml(source);
+
+            HtmlDocument htmlDoc = new HtmlAgilityPack.HtmlDocument();
+            htmlDoc.OptionFixNestedTags = true;
+            htmlDoc.LoadHtml(source);
+            //HtmlNode divContainer = htmlDoc.GetElementbyId("directoryItems");//My problem here,I want to get by class name html
+            HtmlNodeCollection divContainer = htmlDoc.DocumentNode.SelectNodes("//dd//time");
+            HtmlNodeCollection divContainer1 = htmlDoc.DocumentNode.SelectNodes("//dd//span");
+            //HtmlNodeCollection divContainer2 = htmlDoc.DocumentNode.SelectNodes("//dd itemprop='events'");
+
+            var nodes = htmlDoc.DocumentNode.SelectNodes(@"//dd[@itemprop='events']");
+
+            var nodes1 = htmlDoc.DocumentNode.SelectNodes(@"//dd/time");
+
+            if (divContainer != null)
+            {
+                //HtmlNodeCollection nodes = divContainer.SelectNodes("//table/tr");
+            }
+
 
         }
 
